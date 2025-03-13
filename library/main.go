@@ -77,6 +77,13 @@ func main() {
 
 	fmt.Printf("Our library has %d book(s).\n\n", len(l))
 
+	printBook(l[0])
+	printBook(l[1])
+	printBook(l[2])
+	printBook(l[3])
+	printBook(l[4])
+	printBook(l[5])
+
 	fmt.Print(
 		"------------------------------------------------------------------\n",
 		"                           Thank you\n",
@@ -84,5 +91,33 @@ func main() {
 }
 
 // -----------------------------------------------------------------------------
-func genreToString(genre Genre) string {
+func genreToString(g Genre) string {
+	switch g {
+	case Fiction:
+		return "Fiction"
+	case NonFicton:
+		return "Non-fiction"
+	case ScienceFiction:
+		return "Science Fiction"
+	case Mystery:
+		return "Mystery"
+	case Biography:
+		return "Biography"
+	default:
+		// This should never execute because every enumeration is caught.
+		return ""
+	}
+}
+
+// -----------------------------------------------------------------------------
+func printBook(b Book) {
+	fmt.Printf(
+		"book {\n"+
+			"  %s = %s\n"+
+			"  %s = %s\n"+
+			"  %s = %d\n"+
+			"  %s = %s\n"+
+			"}\n\n",
+		"title", b.title, "author", b.author, "year", b.year, "genre",
+		genreToString(b.genre))
 }
