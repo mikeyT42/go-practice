@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -38,4 +39,18 @@ func main() {
 }
 
 // -----------------------------------------------------------------------------
-func inputLoop() LoopControl {}
+func inputLoop() LoopControl {
+	const sentinel = '\n'
+
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString(sentinel)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading from stdin %v\n", err)
+		return Continue
+	}
+	if input[0] == sentinel {
+		return Stop
+	}
+
+	return Continue
+}
