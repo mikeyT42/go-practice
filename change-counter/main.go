@@ -14,6 +14,21 @@ const (
 	Stop
 )
 
+type InputValidationType int
+
+const (
+	Ok InputValidationType = iota
+	OutOfRange
+	NoInput
+	InputError
+	IOError
+)
+
+type InputValidation struct {
+	Type  InputValidationType
+	Value interface{}
+}
+
 func main() {
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
@@ -50,13 +65,18 @@ func inputLoop() LoopControl {
 		fmt.Fprintf(os.Stderr, "Error reading from stdin %v\n", err)
 		return Continue
 	}
-	if input[0] == sentinel {
-		return Stop
-	}
 	input = input[:len(input)-1] // Get rid of the sentinel.
 
 	return Continue
 }
 
 // -----------------------------------------------------------------------------
-func validate(input string) {}
+func validate(input string, err error) InputValidation {
+	if err != nil {
+		return InputValidation{Type: IOError, Value: err}
+	}
+
+	var f float32 = 0.0
+
+	return InputValidation{Type: Ok, Value: f}
+}
