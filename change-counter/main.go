@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 )
 
 type LoopControl int
@@ -14,21 +15,25 @@ const (
 	Stop
 )
 
-type InputValidationType int
-
-const (
-	Ok InputValidationType = iota
-	OutOfRange
-	NoInput
-	InputError
-	IOError
-)
-
-type InputValidation struct {
-	Type  InputValidationType
-	Value interface{}
+type OutOfRangeError struct{}
+type NoInputError struct{}
+type InputError struct {
+	Err error
 }
 
+func (e *OutOfRangeError) Error() string {
+	return "The input was outside the range of 0 and 1."
+}
+
+func (e *NoInputError) Error() string {
+	return "Sorry, but you didn't enter any input. Please try again."
+}
+
+func (e *InputError) Error() string {
+	return fmt.Sprintf("You did not input valid input.\nerror:\n%v", e.Err)
+}
+
+// -----------------------------------------------------------------------------
 func main() {
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
@@ -55,28 +60,62 @@ func main() {
 
 // -----------------------------------------------------------------------------
 func inputLoop() LoopControl {
-	const sentinel = '\n'
+	const delim = '\n'
+	const sentinel = -1
 
 	fmt.Print("Enter the amount you spent to two decimal places: the input\n",
 		"must be between 0 and 1: -1 is to exit.\n")
 	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString(sentinel)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading from stdin %v\n", err)
+	input, err := reader.ReadString(delim)
+
+	cost, err := validate(input, err)
+	switch err := err.(type) {
+	case *OutOfRangeError:
+		fmt.Printf("You input %s, a value that is not between 0 and 1.\n\n",
+			input)
+		return Continue
+	case *NoInputError:
+		fmt.Print(
+			"Sorry, but you didn't enter any input. Please try again.\n\n")
+		return Continue
+	case *InputError:
+		fmt.Printf(
+			"You did not input valid input [%s]\nerror:\n%v\n\n", input, err)
 		return Continue
 	}
-	input = input[:len(input)-1] // Get rid of the sentinel.
+	if cost == sentinel {
+		return Stop
+	}
+
+	var numQuarters int
+	var numDimes int
+	var numNickels int
+	var numPennies int
 
 	return Continue
 }
 
 // -----------------------------------------------------------------------------
-func validate(input string, err error) InputValidation {
+func validate(input string, err error) (float32, error) {
+	const sentinel float32 = -1
+
 	if err != nil {
-		return InputValidation{Type: IOError, Value: err}
+		return 0, &InputError{err}
+	}
+	input = input[:len(input)-1] // Get rid of the sentinel.
+	if len(input) == 0 {
+		return 0, &NoInputError{}
 	}
 
-	var f float32 = 0.0
+	f, err := strconv.ParseFloat(input, 32)
+	if err != nil {
+		return 0, &InputError{err}
+	}
 
-	return InputValidation{Type: Ok, Value: f}
+	fin := float32(f)
+	if fin < 0 || fin > 1 {
+		return 0, &OutOfRangeError{}
+	}
+
+	return fin, nil
 }
