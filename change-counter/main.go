@@ -93,6 +93,11 @@ func inputLoop() LoopControl {
 	var numNickels int
 	var numPennies int
 	calculateChange(&cost, &numQuarters, &numDimes, &numNickels, &numPennies)
+	fmt.Printf(
+		"\nThe amount you gave was $%.2f, your change is %d Quarters,\n"+
+			"%d Dimes, %d Nickels, and %d Pennies.\n\n", cost, numQuarters,
+		numDimes, numNickels, numPennies,
+	)
 
 	return Continue
 }
@@ -128,4 +133,14 @@ func validate(input string, err error) (float32, error) {
 // -----------------------------------------------------------------------------
 func calculateChange(cost *float32, numQuarters *int, numDimes *int,
 	numNickels *int, numPennies *int) {
+	costCents := int(*cost * 100)
+	change := costCents
+
+	*numQuarters = change / 25
+	change %= 25
+	*numDimes = change / 10
+	change %= 10
+	*numNickels = change / 5
+	change %= 5
+	*numPennies = change
 }
