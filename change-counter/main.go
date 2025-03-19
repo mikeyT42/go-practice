@@ -72,7 +72,7 @@ func inputLoop() LoopControl {
 	switch err := err.(type) {
 	case *OutOfRangeError:
 		fmt.Printf("You input %s, a value that is not between 0 and 1.\n\n",
-			input)
+			input[:len(input)-1])
 		return Continue
 	case *NoInputError:
 		fmt.Print(
@@ -80,7 +80,8 @@ func inputLoop() LoopControl {
 		return Continue
 	case *InputError:
 		fmt.Printf(
-			"You did not input valid input [%s]\nerror:\n%v\n\n", input, err)
+			"You did not input valid input [%s]\nerror:\n%v\n\n",
+			input[:len(input)-1], err.Err)
 		return Continue
 	}
 	if cost == sentinel {
@@ -91,6 +92,7 @@ func inputLoop() LoopControl {
 	var numDimes int
 	var numNickels int
 	var numPennies int
+	calculateChange(&cost, &numQuarters, &numDimes, &numNickels, &numPennies)
 
 	return Continue
 }
@@ -113,9 +115,17 @@ func validate(input string, err error) (float32, error) {
 	}
 
 	fin := float32(f)
+	if fin == sentinel {
+		return fin, nil
+	}
 	if fin < 0 || fin > 1 {
 		return 0, &OutOfRangeError{}
 	}
 
 	return fin, nil
+}
+
+// -----------------------------------------------------------------------------
+func calculateChange(cost *float32, numQuarters *int, numDimes *int,
+	numNickels *int, numPennies *int) {
 }
