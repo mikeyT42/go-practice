@@ -88,10 +88,7 @@ func inputLoop() LoopControl {
 		return Stop
 	}
 
-	var numQuarters int
-	var numDimes int
-	var numNickels int
-	var numPennies int
+	var numQuarters, numDimes, numNickels, numPennies int
 	calculateChange(&cost, &numQuarters, &numDimes, &numNickels, &numPennies)
 	fmt.Printf(
 		"\nThe amount you gave was $%.2f, your change is %d Quarters,\n"+
