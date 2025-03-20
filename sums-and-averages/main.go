@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type LoopControl int
@@ -82,6 +83,9 @@ func validate(input string, err error) ([]float32, error) {
 	input = input[:len(input)-1]
 	if len(input) == 0 {
 		return nil, &NoInputError{}
+	}
+
+	for _, sn := range strings.Split(input, " ") {
 	}
 
 	var f []float32
