@@ -50,7 +50,7 @@ func TestValidationNoInputError(t *testing.T) {
 	}
 	_, ok := e.(*NoInputError)
 	if !ok {
-		t.Errorf("actual %T :: expected *InputError", e)
+		t.Errorf("actual %T :: expected *NoInputError", e)
 	}
 }
 
