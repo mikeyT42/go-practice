@@ -109,8 +109,10 @@ func inputLoop() LoopControl {
 
 	var s Sums
 	var c Counts
-	//var a Averages
+	var a Averages
 	sumAndCount(ns, nLen, &s, &c)
+	averages(&s, &c, &a)
+	printTable(&s, &c, &a)
 
 	return Continue
 }
@@ -146,7 +148,7 @@ func validate(input string, err error) ([maxItems]float32, int, error) {
 		fLen += 1
 	}
 
-	return f, 0, nil
+	return f, fLen, nil
 }
 
 // -----------------------------------------------------------------------------
@@ -162,4 +164,37 @@ func sumAndCount(ns [maxItems]float32, nLen int, s *Sums, c *Counts) {
 		s.overall += ns[i]
 		c.overall += 1
 	}
+}
+
+// -----------------------------------------------------------------------------
+func averages(s *Sums, c *Counts, a *Averages) {
+	if c.positive == 0 {
+		a.positive = 0
+	} else {
+		a.positive = s.positive / float32(c.positive)
+	}
+
+	if c.negative == 0 {
+		a.negative = 0
+	} else {
+		a.negative = s.negative / float32(c.negative)
+	}
+
+	if s.overall == 0 || c.overall == 0 {
+		a.overall = 0
+	} else {
+		a.overall = s.overall / float32(c.overall)
+	}
+}
+
+// -----------------------------------------------------------------------------
+func printTable(s *Sums, c *Counts, a *Averages) {
+	fmt.Printf("\nStatistics:\n")
+	fmt.Printf("%18s%16s%14s\n", "Number:", "Total:", "Average:")
+	fmt.Printf("Positive:%9d%16.3f%14.3f\n", c.positive, s.positive,
+		a.positive)
+	fmt.Printf("Negative:%9d%16.3f%14.3f\n", c.negative, s.negative,
+		a.negative)
+	fmt.Printf("Overall:%10d%16.3f%14.3f\n\n", c.overall, s.overall,
+		a.overall)
 }

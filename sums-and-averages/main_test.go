@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -99,5 +100,20 @@ func TestSumsAndCount(t *testing.T) {
 	}
 	if c != cEx {
 		t.Errorf("actual %v :: expected %v", c, cEx)
+	}
+}
+
+// -----------------------------------------------------------------------------
+func TestAverages(t *testing.T) {
+	s := Sums{10, -5, 5}
+	c := Counts{1, 1, 2}
+	var a Averages
+
+	aEx := Averages{10, -5, 2.5}
+
+	averages(&s, &c, &a)
+
+	if a != aEx {
+		t.Errorf("actual %v :: expected %v", a, aEx)
 	}
 }
