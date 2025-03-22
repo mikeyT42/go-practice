@@ -10,7 +10,7 @@ func TestValidateInputErrorArg(t *testing.T) {
 	const veX int = 0
 	err := errors.New("I am a testing error")
 
-	ve, e := validate("some input", err)
+	ve, _, e := validate("some input", err)
 	if len(ve) == veX {
 		t.Errorf("actual %v :: expected %v", ve, veX)
 	}
@@ -23,7 +23,7 @@ func TestValidateInputErrorArg(t *testing.T) {
 // -----------------------------------------------------------------------------
 func TestValidationNoInputError(t *testing.T) {
 	const veX int = 0
-	ve, e := validate("\n", nil)
+	ve, _, e := validate("\n", nil)
 	if len(ve) == veX {
 		t.Errorf("actual %v :: expected %v", ve, veX)
 	}
@@ -36,7 +36,7 @@ func TestValidationNoInputError(t *testing.T) {
 // -----------------------------------------------------------------------------
 func TestValidationNoInputErrorWhitespace(t *testing.T) {
 	const veX int = 0
-	ve, e := validate("          \n", nil)
+	ve, _, e := validate("          \n", nil)
 	if len(ve) == veX {
 		t.Errorf("actual %v :: expected %v", ve, veX)
 	}
@@ -49,7 +49,7 @@ func TestValidationNoInputErrorWhitespace(t *testing.T) {
 // -----------------------------------------------------------------------------
 func TestValidationTooManyError(t *testing.T) {
 	const veX int = 0
-	ve, e := validate("1 2 3 4 5 6 7 8 9 10 11", nil)
+	ve, _, e := validate("1 2 3 4 5 6 7 8 9 10 11", nil)
 	if len(ve) == veX {
 		t.Errorf("actual %v :: expected %v", ve, veX)
 	}
@@ -62,7 +62,7 @@ func TestValidationTooManyError(t *testing.T) {
 // -----------------------------------------------------------------------------
 func TestValidationOkWhitespaceOverload(t *testing.T) {
 	const veX int = 3
-	ve, e := validate("  1  2 3    \n", nil)
+	ve, _, e := validate("  1  2 3    \n", nil)
 	if e != nil {
 		t.Errorf("actual %T :: expected %T", e, nil)
 	}
@@ -74,7 +74,7 @@ func TestValidationOkWhitespaceOverload(t *testing.T) {
 // -----------------------------------------------------------------------------
 func TestValidationOk(t *testing.T) {
 	const veX int = 3
-	ve, e := validate("1 2 3\n", nil)
+	ve, _, e := validate("1 2 3\n", nil)
 	if e != nil {
 		t.Errorf("actual %T :: expected %T", e, nil)
 	}
@@ -88,10 +88,11 @@ func TestSumsAndCount(t *testing.T) {
 	sEx := Sums{10, -5, 5}
 	cEx := Counts{1, 1, 2}
 	f := [maxItems]float32{10, -5}
+	var fLen int = 2
 	var s Sums
 	var c Counts
 
-	sumAndCount(f, &s, &c)
+	sumAndCount(f, fLen, &s, &c)
 
 	if s != sEx {
 		t.Errorf("actual %v :: expected %v", s, sEx)

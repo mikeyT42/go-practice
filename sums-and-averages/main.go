@@ -85,12 +85,12 @@ func inputLoop() LoopControl {
 
 	fmt.Printf(
 		"Please input up to %d floating point or integer numbers. Seperate\n"+
-			"them with spaces. Simply enter a newline character to exit.",
+			"them with spaces. Simply enter a newline character to exit.\n\n",
 		maxItems)
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString(sentinel)
 
-	ns, err := validate(input, err)
+	ns, nLen, err := validate(input, err)
 	switch err := err.(type) {
 	case *InputError:
 		fmt.Printf(
@@ -110,47 +110,48 @@ func inputLoop() LoopControl {
 	var s Sums
 	var c Counts
 	//var a Averages
-	sumAndCount(ns, &s, &c)
+	sumAndCount(ns, nLen, &s, &c)
 
 	return Continue
 }
 
 // -----------------------------------------------------------------------------
-func validate(input string, err error) ([maxItems]float32, error) {
+func validate(input string, err error) ([maxItems]float32, int, error) {
 	if err != nil {
-		return [maxItems]float32{}, &InputError{err}
+		return [maxItems]float32{}, 0, &InputError{err}
 	}
 	input = strings.TrimSpace(input)
 	if len(input) == 0 {
-		return [maxItems]float32{}, &NoInputError{}
+		return [maxItems]float32{}, 0, &NoInputError{}
 	}
 
 	iSplit := strings.Split(input, " ")
 	if len(iSplit) == 0 {
-		return [maxItems]float32{}, &NoInputError{}
+		return [maxItems]float32{}, 0, &NoInputError{}
 	}
 	var f [maxItems]float32
+	var fLen int = 0
 	for i, sn := range iSplit {
 		if i == maxItems {
-			return [maxItems]float32{}, &TooManyError{}
+			return [maxItems]float32{}, 0, &TooManyError{}
 		}
 		if sn == "" {
 			continue
 		}
 		floc, err := strconv.ParseFloat(sn, 32)
 		if err != nil {
-			return [maxItems]float32{}, &InputError{}
+			return [maxItems]float32{}, 0, &InputError{}
 		}
 		f[i] = float32(floc)
+		fLen += 1
 	}
 
-	return f, nil
+	return f, 0, nil
 }
 
 // -----------------------------------------------------------------------------
-func sumAndCount(ns [maxItems]float32, s *Sums, c *Counts) {
-	for i := range len(ns) {
-		fmt.Printf("%f\n", ns[i])
+func sumAndCount(ns [maxItems]float32, nLen int, s *Sums, c *Counts) {
+	for i := range nLen {
 		if ns[i] >= 0 {
 			s.positive += ns[i]
 			c.positive += 1
